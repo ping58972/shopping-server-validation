@@ -4,6 +4,8 @@ const bcrypt = require('bcryptjs');
 const nodemailer = require('nodemailer');
 //const sendgridTransport = require('nodemailer-sendgrid-transport');
 
+const { validationResult } = require('express-validator/check');
+
 const User = require('../modles/user');
 
 // const transporter = nodemailer.createTransport(sendgridTransport({
@@ -50,7 +52,9 @@ exports.getLogin = (req, res, next) => {
       path: '/signup',
       pageTitle: 'Signup',
      // isAuthenticated: false
-     errorMessage: message
+     errorMessage: message,
+     oldInput: {email: '', password: '', confirmPassword: ''}
+
     });
   };
 exports.postLogin = (req, res, next) => {
@@ -59,6 +63,15 @@ exports.postLogin = (req, res, next) => {
     const email = req.body.email;
     const password = req.body.password;
     //User.findById('5cf8915ffcf7093404b2dca4')
+    const errors = validationResult(req);
+  if(!errors.isEmpty()){
+   // console.log(errors.array());
+    return res.status(422).render('auth/login', {
+      path: '/login',
+      pageTitle: 'Login',
+      errorMessage: errors.array()[0].msg
+    });
+  }
     User.findOne({email: email})
     .then(user => {
       if(!user) {
@@ -88,13 +101,24 @@ exports.postLogin = (req, res, next) => {
 exports.postSignup = (req, res, next) => {
   const email = req.body.email;
   const password = req.body.password;
-  const confirmPassword = req.body.confirmPassword;
-  User.findOne({email: email}).then(userDoc => {
-    if(userDoc) {
-      req.flash('error', 'E-mail exist already, please pick a different one!');
-      return res.redirect('/signup');
-    }
-    return bcrypt.hash(password, 12)
+  //const confirmPassword = req.body.confirmPassword;
+  const errors = validationResult(req);
+  if(!errors.isEmpty()){
+   // console.log(errors.array());
+    return res.status(422).render('auth/signup', {
+      path: '/signup',
+      pageTitle: 'Signup',
+      errorMessage: errors.array()[0].msg,
+      oldInput: {email:email, password: password, confirmPassword: req.body.confirmPassword}
+    });
+  }
+  // User.findOne({email: email}).then(userDoc => {
+  //   if(userDoc) {
+  //     req.flash('error', 'E-mail exist already, please pick a different one!');
+  //     return res.redirect('/signup');
+  //   }
+    // return bcrypt.hash(password, 12)
+    bcrypt.hash(password, 12)
     .then(hashedPassword => {
       const user = new User({
         email: email, password: hashedPassword,
@@ -111,8 +135,8 @@ exports.postSignup = (req, res, next) => {
       });
       
     }).catch(err=>console.log(err));
-  })
-  .catch(err=>console.log(err));
+  // })
+  // .catch(err=>console.log(err));
 };
 
 exports.postLogout = (req, res, next) => {
