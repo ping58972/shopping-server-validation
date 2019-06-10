@@ -15,7 +15,11 @@ exports.getProducts = (req, res, next)=>{
      path: '/products',
     // isAuthenticated: req.session.isLoggedIn
     });
-    }).catch(err=>console.log(err));
+    }).catch(err=>{ 
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error); 
+  });
  }
 exports.getProduct = (req, res, next)=>{
    const prodId = req.params.productId;
@@ -26,7 +30,11 @@ exports.getProduct = (req, res, next)=>{
          path:'/products',
         // isAuthenticated: req.session.isLoggedIn
       });
-   }).catch(err=>console.log(err));
+   }).catch(err=>{ 
+    const error = new Error(err);
+    error.httpStatusCode = 500;
+    return next(error); 
+});
  }
 
  exports.getIndex = (req, res, next) => {
@@ -39,7 +47,11 @@ exports.getProduct = (req, res, next)=>{
     //  isAuthenticated: req.session.isLoggedIn,
     //  csrfToken: req.csrfToken()
     });
-    }).catch(err=>console.log(err));
+    }).catch(err=>{ 
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error); 
+  });
     
  }
  exports.getCart = (req, res, next) => {
@@ -56,7 +68,11 @@ exports.getProduct = (req, res, next)=>{
             products: products,
            // isAuthenticated: req.session.isLoggedIn
            });
-       }).catch(err=>console.log(err));
+       }).catch(err=>{ 
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error); 
+    });
  }
 
 // exports.getCart = (req, res, next) => {
@@ -81,7 +97,11 @@ exports.getProduct = (req, res, next)=>{
      return req.user.addToCart(product)
    }).then(result=>{
     res.redirect('/cart');
-   }).catch(err=>console.log(err));
+   }).catch(err=>{ 
+        const error = new Error(err);
+        error.httpStatusCode = 500;
+        return next(error); 
+    });
   
  };
 
@@ -118,7 +138,11 @@ exports.getProduct = (req, res, next)=>{
     req.user.removeFromCart(prodId)
     .then(result => {
       res.redirect('/cart');
-    }).catch(err=> console.log(err));
+    }).catch(err=> { 
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error); 
+  });
  }
 
 //  exports.postOrder = (req, res, next) => {
@@ -158,7 +182,11 @@ exports.postOrder = (req, res, next) => {
       }).then(()=>{
         res.redirect('/orders');
      })
-     .catch(err => console.log(err));
+     .catch(err => { 
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error); 
+  });
  };
 //  exports.getOrders = (req, res, next) => {
 //     req.user.getOrders({include: ['products']}).then(orders =>{
@@ -181,7 +209,11 @@ exports.getOrders = (req, res, next) => {
         // isAuthenticated: req.session.isLoggedIn
        });
      })
-     .catch(err => console.log(err));
+     .catch(err => { 
+      const error = new Error(err);
+      error.httpStatusCode = 500;
+      return next(error); 
+  });
  };
 
 //  exports.getOrders = (req, res, next) => {
